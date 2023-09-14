@@ -155,7 +155,7 @@ fun Main() {
                 .size(height)
                 .padding(circlePadding)
                 .clip(RoundedCornerShape(50))
-                .background(Color.Gray)
+                .then(if (swipeableState.currentValue == day) Modifier.background(Color.White) else Modifier.background(Color.Black))
                 .clickable {
                     scope.launch {
 
