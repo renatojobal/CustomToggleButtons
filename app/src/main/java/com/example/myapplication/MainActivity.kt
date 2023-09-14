@@ -23,12 +23,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -113,12 +118,21 @@ fun Main() {
 
     val scope = rememberCoroutineScope()
 
+    val backgroundId = remember { mutableStateOf(R.drawable.switch_body_day) }
+
+
+    if (swipeableState.currentValue == day) {
+        backgroundId.value = R.drawable.switch_body_day
+    } else {
+        backgroundId.value = R.drawable.switch_body_night
+    }
+    
+
     Row(
         modifier = Modifier
             .height(height)
             .width(width)
             .clip(RoundedCornerShape(height))
-            .background(Color.Cyan)
             .border(1.dp, Color.DarkGray, CircleShape)
             .swipeable(
                 state = swipeableState,
@@ -126,9 +140,15 @@ fun Main() {
                 thresholds = { _, _ -> FractionalThreshold(0.3f) },
                 orientation = Orientation.Horizontal
             )
-            .background(Color.LightGray),
+            .background(Color.Transparent)
+            .paint(
+                painterResource(id = backgroundId.value),
+                contentScale = ContentScale.FillBounds
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
+
+
         Box(
             Modifier
                 .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
