@@ -19,12 +19,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,11 +42,7 @@ import androidx.wear.compose.material.FractionalThreshold
 import androidx.wear.compose.material.rememberSwipeableState
 import androidx.wear.compose.material.swipeable
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.coroutineContext
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
@@ -61,15 +56,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        Main()
-                    }
-
+                    Main()
 
                 }
             }
@@ -77,16 +64,78 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
+@OptIn(ExperimentalWearMaterialApi::class)
 @Composable
-fun Circle(size: Dp = 16.dp) {
+fun Main() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
 
-    Box(
-        modifier = Modifier
-            .size(size)
-            .clip(RoundedCornerShape(50))
-            .background(Color.Gray)
-    ) {
+        ) {
+
+        CustomSwitch(
+            height = 70.dp,
+            width = 140.dp,
+            circleButtonPadding = 4.dp,
+            outerBackgroundOnResource = R.drawable.switch_body_night,
+            outerBackgroundOffResource = R.drawable.switch_body_day,
+            circleBackgroundOnResource = R.drawable.switch_btn_moon,
+            circleBackgroundOffResource = R.drawable.switch_btn_sun,
+            stateOn = 1,
+            stateOff = 0,
+            initialValue = 0,
+            onCheckedChanged = {}
+        )
+
+        Divider(thickness = 15.dp, color = MaterialTheme.colorScheme.surface)
+
+        CustomSwitch(
+            height = 70.dp,
+            width = 140.dp,
+            circleButtonPadding = 4.dp,
+            outerBackgroundOnResource = R.drawable.switch_body_night,
+            outerBackgroundOffResource = R.drawable.switch_body_day,
+            circleBackgroundOnResource = R.drawable.switch_btn_moon,
+            circleBackgroundOffResource = R.drawable.switch_btn_sun,
+            stateOn = 1,
+            stateOff = 0,
+            initialValue = 1,
+            onCheckedChanged = {}
+        )
+
+        Divider(thickness = 20.dp, color = MaterialTheme.colorScheme.surface)
+
+
+        CustomSwitch(
+            height = 70.dp,
+            width = 140.dp,
+            circleButtonPadding = 4.dp,
+            outerBackgroundOnResource = R.drawable.switch_body_night,
+            outerBackgroundOffResource = R.drawable.switch_body_day,
+            circleBackgroundOnResource = R.drawable.switch_btn_moon,
+            circleBackgroundOffResource = R.drawable.switch_btn_sun,
+            stateOn = 1,
+            stateOff = 0,
+            initialValue = 0,
+            onCheckedChanged = {}
+        )
+
+        Divider(thickness = 15.dp, color = MaterialTheme.colorScheme.surface)
+
+        CustomSwitch(
+            height = 70.dp,
+            width = 140.dp,
+            circleButtonPadding = 4.dp,
+            outerBackgroundOnResource = R.drawable.switch_body_night,
+            outerBackgroundOffResource = R.drawable.switch_body_day,
+            circleBackgroundOnResource = R.drawable.switch_btn_moon,
+            circleBackgroundOffResource = R.drawable.switch_btn_sun,
+            stateOn = 1,
+            stateOff = 0,
+            initialValue = 1,
+            onCheckedChanged = {}
+        )
 
     }
 
@@ -94,31 +143,45 @@ fun Circle(size: Dp = 16.dp) {
 
 @Preview
 @Composable
-fun CirclePrev() {
+fun MainPrev() {
     MyApplicationTheme {
-        Circle()
+        Main()
     }
 }
 
 
 @OptIn(ExperimentalWearMaterialApi::class)
 @Composable
-fun Main() {
+fun CustomSwitch(
+    height: Dp,
+    width: Dp,
+    circleButtonPadding: Dp,
+    outerBackgroundOnResource: Int,
+    outerBackgroundOffResource: Int,
+    circleBackgroundOnResource: Int,
+    circleBackgroundOffResource: Int,
+    stateOn: Int,
+    stateOff: Int,
+    initialValue: Int,
+    onCheckedChanged: (checked: Boolean) -> Unit
+) {
 
-    val height = 70.dp
-    val width = 140.dp
-    val circlePadding = 4.dp
+    val swipeableState = rememberSwipeableState(
+        initialValue = initialValue,
+        confirmStateChange = { newState ->
+            if (newState == stateOff) {
+                onCheckedChanged(false)
+            } else {
+                onCheckedChanged(true)
+            }
+            true
+        }
+    )
 
-    val day = 0
-    val night = 1
-
-    val swipeableState = rememberSwipeableState(0)
     val sizePx = with(LocalDensity.current) { (width - height).toPx() }
-    val anchors = mapOf(0f to day, sizePx to night) // Maps anchor points (in px) to states
+    val anchors = mapOf(0f to stateOff, sizePx to stateOn) // Maps anchor points (in px) to states
 
     val scope = rememberCoroutineScope()
-
-
 
     Row(
         modifier = Modifier
@@ -134,11 +197,11 @@ fun Main() {
             )
             .background(Color.Transparent)
             .then(
-                if (swipeableState.currentValue == day) Modifier.paint(
-                    painterResource(id = R.drawable.switch_body_day),
+                if (swipeableState.currentValue == stateOff) Modifier.paint(
+                    painterResource(id = outerBackgroundOffResource),
                     contentScale = ContentScale.FillBounds
                 ) else Modifier.paint(
-                    painterResource(id = R.drawable.switch_body_night),
+                    painterResource(id = outerBackgroundOnResource),
                     contentScale = ContentScale.FillBounds
                 )
             ),
@@ -150,24 +213,24 @@ fun Main() {
             Modifier
                 .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
                 .size(height)
-                .padding(circlePadding)
+                .padding(circleButtonPadding)
                 .clip(RoundedCornerShape(50))
                 .then(
-                    if (swipeableState.currentValue == day) Modifier.paint(
-                        painterResource(id = R.drawable.switch_btn_sun),
+                    if (swipeableState.currentValue == stateOff) Modifier.paint(
+                        painterResource(id = circleBackgroundOffResource),
                         contentScale = ContentScale.FillBounds
                     ) else Modifier.paint(
-                        painterResource(id = R.drawable.switch_btn_moon),
+                        painterResource(id = circleBackgroundOnResource),
                         contentScale = ContentScale.FillBounds
                     )
                 )
                 .clickable {
                     scope.launch {
 
-                        if (swipeableState.currentValue == day) {
-                            swipeableState.animateTo(night)
+                        if (swipeableState.currentValue == stateOff) {
+                            swipeableState.animateTo(stateOn)
                         } else {
-                            swipeableState.animateTo(day)
+                            swipeableState.animateTo(stateOff)
                         }
 
                     }
@@ -177,12 +240,51 @@ fun Main() {
         )
     }
 
+
+}
+
+
+@Preview
+@Composable
+fun CustomSwitchPreviewOff() {
+    MyApplicationTheme {
+        CustomSwitch(
+            height = 70.dp,
+            width = 140.dp,
+            circleButtonPadding = 4.dp,
+            outerBackgroundOnResource = R.drawable.switch_body_night,
+            outerBackgroundOffResource = R.drawable.switch_body_day,
+            circleBackgroundOnResource = R.drawable.switch_btn_moon,
+            circleBackgroundOffResource = R.drawable.switch_btn_sun,
+            stateOn = 1,
+            stateOff = 0,
+            initialValue = 0,
+            onCheckedChanged = {}
+        )
+    }
+
 }
 
 @Preview
 @Composable
-fun MainPrev() {
+fun CustomSwitchPreviewOn() {
     MyApplicationTheme {
-        Main()
+        CustomSwitch(
+            height = 70.dp,
+            width = 140.dp,
+            circleButtonPadding = 4.dp,
+            outerBackgroundOnResource = R.drawable.switch_body_night,
+            outerBackgroundOffResource = R.drawable.switch_body_day,
+            circleBackgroundOnResource = R.drawable.switch_btn_moon,
+            circleBackgroundOffResource = R.drawable.switch_btn_sun,
+            stateOn = 1,
+            stateOff = 0,
+            initialValue = 1,
+            onCheckedChanged = {}
+        )
     }
+
 }
+
+
+
