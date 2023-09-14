@@ -118,15 +118,7 @@ fun Main() {
 
     val scope = rememberCoroutineScope()
 
-    val backgroundId = remember { mutableStateOf(R.drawable.switch_body_day) }
 
-
-    if (swipeableState.currentValue == day) {
-        backgroundId.value = R.drawable.switch_body_day
-    } else {
-        backgroundId.value = R.drawable.switch_body_night
-    }
-    
 
     Row(
         modifier = Modifier
@@ -141,9 +133,14 @@ fun Main() {
                 orientation = Orientation.Horizontal
             )
             .background(Color.Transparent)
-            .paint(
-                painterResource(id = backgroundId.value),
-                contentScale = ContentScale.FillBounds
+            .then(
+                if (swipeableState.currentValue == day) Modifier.paint(
+                    painterResource(id = R.drawable.switch_body_day),
+                    contentScale = ContentScale.FillBounds
+                ) else Modifier.paint(
+                    painterResource(id = R.drawable.switch_body_night),
+                    contentScale = ContentScale.FillBounds
+                )
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -155,7 +152,15 @@ fun Main() {
                 .size(height)
                 .padding(circlePadding)
                 .clip(RoundedCornerShape(50))
-                .then(if (swipeableState.currentValue == day) Modifier.background(Color.White) else Modifier.background(Color.Black))
+                .then(
+                    if (swipeableState.currentValue == day) Modifier.paint(
+                        painterResource(id = R.drawable.switch_btn_sun),
+                        contentScale = ContentScale.FillBounds
+                    ) else Modifier.paint(
+                        painterResource(id = R.drawable.switch_btn_moon),
+                        contentScale = ContentScale.FillBounds
+                    )
+                )
                 .clickable {
                     scope.launch {
 
